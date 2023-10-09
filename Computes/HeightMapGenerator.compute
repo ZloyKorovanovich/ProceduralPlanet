@@ -1,0 +1,79 @@
+#pragma kernel GenerateHeightMap
+
+RWTexture2D<float> HeightMap;
+
+uint Octaves;
+uint Resolution;
+
+float Scale;
+float Lacunarity;
+float Persistance;
+float Seed;
+
+float3 Start;
+float3 EndX;
+float3 EndY;
+float3 Peak;
+
+
+float2 unity_gradientNoise_dir(float2 p)
+{
+    p = p % 289;
+    float x = (34 * p.x + 1) * p.x % 289 + p.y;
+    x = (34 * x + 1) * x % 289;
+    x = frac(x / 41) * 2 - 1;
+    return normalize(float2(x - floor(x + 0.5), abs(x) - 0.5));
+}
+
+float unity_gradientNoise(float2 p)
+{
+    float2 ip = floor(p);
+    float2 fp = frac(p);
+    float d00 = dot(unity_gradientNoise_dir(ip), fp);
+    float d01 = dot(unity_gradientNoise_dir(ip + float2(0, 1)), fp - float2(0, 1));
+    float d10 = dot(unity_gradientNoise_dir(ip + float2(1, 0)), fp - float2(1, 0));
+    float d11 = dot(unity_gradientNoise_dir(ip + float2(1, 1)), fp - float2(1, 1));
+    fp = fp * fp * fp * (fp * (fp * 6 - 15) + 10);
+    return lerp(lerp(d00, d01, fp.y), lerp(d10, d11, fp.y), fp.x);
+}
+
+float Noise3D(float3 UV, float scale)
+{
+    float ab = unity_gradientNoise(UV.xy * scale) + 0.5f;
+    float bc = unity_gradientNoise(UV.yz * scale) + 0.5f;
+    float ac = unity_gradientNoise(UV.xz * scale) + 0.5f;
+
+    float ba = unity_gradientNoise(UV.yx * scale + float2(scale, scale)) + 0.5f;
+    float cb = unity_gradientNoise(UV.zy * scale + float2(scale, scale)) + 0.5f;
+    float ca = unity_gradientNoise(UV.zx * scale + float2(scale, scale)) + 0.5f;
+
+    return (ab + bc + ac + ba + cb + ca) / 6.0f;
+}
+
+float GenerateHeight3D(float3 position, int octaves, float scale, float strength, float lacunarity, float persistance)
+{
+    float output = 0;
+    for(int i = 0 ; i < octaves; i++)
+    {
+        output += Noise3D(position, scale) * strength;
+        scale *= lacunarity;
+        strength *= persistance;
+    }
+    return output;
+}
+
+[numthreads(8,8,1)]
+void GenerateHeightMap (uint3 id : SV_DispatchThreadID)
+{
+    float xN = id.x / (float)Resolution;
+    float yN = id.y / (float)Resolution;
+
+    float3 positionXZ = lerp(Start, EndX, xN) + lerp(Start, EndY, yN);
+    float3 positionY = (1.0f - distance(float2(0.5f, 0.5f), float2(xN, yN))) * Peak;
+
+    float3 position = positionXZ + positionY;
+    position = normalize(position);
+    position += float3(Seed, Seed, Seed);
+
+    HeightMap[id.xy] = GenerateHeight3D(position, Octaves, Scale, 0.4f, Lacunarity, Persistance);
+}
