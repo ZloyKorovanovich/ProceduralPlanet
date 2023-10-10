@@ -27,6 +27,8 @@ namespace ProceduralPlanet.Parametres
         private HeightMap _heightMap;
         [SerializeField]
         private MaterialParametres _materialParametres;
+        [SerializeField]
+        private Detalisation _detalisationParametres;
 
         public General General => _general;
         public Landscape Landscape => _landscape;
@@ -36,6 +38,7 @@ namespace ProceduralPlanet.Parametres
         public Geometry Geometry => _geometry;
         public HeightMap HeightMap => _heightMap;
         public MaterialParametres Material => _materialParametres;
+        public Detalisation Detalisation => _detalisationParametres;
     }
 }
 

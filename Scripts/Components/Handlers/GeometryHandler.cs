@@ -9,8 +9,6 @@ namespace ProceduralPlanet.Components.Handlers
         private Parametres.Visualisation.Geometry _parametres;
         private Mesh _mesh;
 
-        public Mesh Geometry => _mesh;
-
         public GeometryHandler(Parametres.CalculatingComponents.Compute computeParametres, Parametres.Visualisation.Geometry parametres)
         {
             _computeParametres = computeParametres;
@@ -21,6 +19,11 @@ namespace ProceduralPlanet.Components.Handlers
         {
             Generators.PeakGeometry generator = GeometryAdaptionProcessor.FillPeakGeometry(_parametres, _computeParametres);
             generator.GenerateMesh(out _mesh);
+        }
+
+        public void ApplyMesh(ref MeshFilter meshFilter)
+        {
+            meshFilter.mesh = _mesh;
         }
     }
 }
