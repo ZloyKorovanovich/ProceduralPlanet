@@ -62,7 +62,7 @@ float GenerateHeight3D(float3 position, int octaves, float scale, float strength
 
 float3 NormalFrom3Points(float3 a, float3 b, float3 c)
 {
-    return normalize(cross(b - c, c - a));
+    return normalize(cross(b - a, c - a));
 }
 
 [numthreads(8,8,1)]
@@ -78,29 +78,7 @@ void GenerateHeightMap (uint3 id : SV_DispatchThreadID)
     position.xyz = normalize(position.xyz);
     position += float4(Seed, Seed, Seed, Seed);
 
-    xN = (id.x + 1) / (float)Resolution - center;
-    yN = (id.y) / (float)Resolution - center;
-    zN = (1.0f - length(float2(xN, yN))) + _Density;
+    float height = GenerateHeight3D(position.xyz, Octaves, Scale, 0.4f, Lacunarity, Persistance); 
 
-    float4 neighborX = float4(-xN, yN, zN, 1.0f);
-    neighborX = mul(_RotationMatrix, neighborX);
-    neighborX.xyz = normalize(neighborX.xyz);
-    neighborX += float4(Seed, Seed, Seed, Seed);
-
-    xN = (id.x) / (float)Resolution - center;
-    yN = (id.y + 1) / (float)Resolution - center;
-    zN = (1.0f - length(float2(xN, yN))) + _Density;
-
-    float4 neighborY = float4(-xN, yN, zN, 1.0f);
-    neighborY = mul(_RotationMatrix, neighborY);
-    neighborY.xyz = normalize(neighborY.xyz);
-    neighborY += float4(Seed, Seed, Seed, Seed);
-
-
-    float3 height = float3(GenerateHeight3D(neighborX.xyz, Octaves, Scale, 0.4f, Lacunarity, Persistance), 
-        GenerateHeight3D(neighborY.xyz, Octaves, Scale, 0.4f, Lacunarity, Persistance),
-        GenerateHeight3D(position.xyz, Octaves, Scale, 0.4f, Lacunarity, Persistance)); 
-    float3 normal = NormalFrom3Points(height.y, height.x, height.z);
-
-    HeightMap[id.xy] = height.z;
+    HeightMap[id.xy] = height;
 }
