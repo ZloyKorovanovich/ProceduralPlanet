@@ -1,26 +1,14 @@
-using ConvoyWorkflow;
-using System;
+using ConvoyWorkflow.Stage;
 
 namespace ComputeWorkflow.Stage
 {
-    public abstract class KernelStage : IStage
+    public abstract class KernelStage : ReportableStage
     {
         protected KernelData _kernelData;
-        protected Action _onComplete;
 
-        public void FollowAction(Action action)
+        public KernelStage(KernelData kernelData)
         {
-            _onComplete += action;
-        }
-
-        public void UnFollowAction(Action action)
-        {
-            _onComplete -= action;
-        }
-
-        public virtual void Complete()
-        {
-            _onComplete?.Invoke();
+            _kernelData = kernelData;
         }
     }
 }

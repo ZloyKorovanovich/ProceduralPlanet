@@ -4,10 +4,9 @@ namespace ComputeWorkflow.Stage
     {
         private BufferData _buffer;
 
-        public AssignBuffer(BufferData buffer, KernelData kernelData)
+        public AssignBuffer(BufferData buffer, KernelData kernelData) : base(kernelData)
         {
             _buffer = buffer;
-            _kernelData = kernelData;
         }
         
         public override void Complete()

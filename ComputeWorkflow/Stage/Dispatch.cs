@@ -4,9 +4,8 @@ namespace ComputeWorkflow.Stage
     {
         private ThreadSize _threadSize;
 
-        public Dispatch(KernelData kernelData, ThreadSize threadSize)
+        public Dispatch(KernelData kernelData, ThreadSize threadSize) : base(kernelData)
         {
-            _kernelData = kernelData;
             _threadSize = threadSize;
         }
 

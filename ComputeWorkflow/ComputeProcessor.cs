@@ -6,8 +6,7 @@ namespace ComputeWorkflow
 {
     public class ComputeProcessor : MonoBehaviour, IService
     {
-        #region SingleTone
-        private static ConvoyPool _pool;
+        private ConvoyPool _pool;
         
         private void OnEnable()
         {
@@ -27,7 +26,6 @@ namespace ComputeWorkflow
             if (ServiceLocator.ComputeProcessor != this)
                 return;
         }
-        #endregion
 
         public void ConfigureConvoy(Stack<IStage> stages, out IConvoy convoyInetraction)
         {

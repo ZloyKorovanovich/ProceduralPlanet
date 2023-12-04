@@ -4,10 +4,9 @@ namespace ComputeWorkflow.Stage
     {
         private TextureData _texture;
 
-        public AssignTexture(TextureData texture, KernelData kernelData)
+        public AssignTexture(TextureData texture, KernelData kernelData) : base(kernelData)
         {
             _texture = texture;
-            _kernelData = kernelData;
         }
 
         public override void Complete()

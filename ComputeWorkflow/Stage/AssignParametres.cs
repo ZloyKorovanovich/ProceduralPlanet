@@ -4,9 +4,8 @@ namespace ComputeWorkflow.Stage
     {
         protected IParametresModel _parametres;
 
-        public AssignParametres(IParametresModel parametres, KernelData kernelData)
+        public AssignParametres(IParametresModel parametres, KernelData kernelData) : base(kernelData)
         {
-            _kernelData = kernelData;
             _parametres = parametres;
         }
 
