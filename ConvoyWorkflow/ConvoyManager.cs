@@ -7,7 +7,7 @@ namespace ComputeWorkflow
     public class ConvoyManager : MonoBehaviour, IService
     {
         private ConvoyPool _pool;
-        
+
         private void OnEnable()
         {
             ServiceLocator.RegisterService(this);
@@ -15,7 +15,7 @@ namespace ComputeWorkflow
             _pool = new ConvoyPool();
         }
 
-        public void OnDisable()
+        private void OnDisable()
         {
             ServiceLocator.UnregisterService<ConvoyManager>();
         }
